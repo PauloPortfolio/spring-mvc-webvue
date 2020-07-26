@@ -1,0 +1,38 @@
+version: '3.1'
+
+services:
+  webvue-mysql:
+    image: mysql:5.7
+    container_name: webvue-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=webvuesql
+    volumes:
+      - webvuedb:/var/lib/mysql
+    networks:
+      - webvue
+
+  webvue-web:
+    image: maven:3.5-jdk-8
+    container_name: webvue-web
+    working_dir: /app
+    ports:
+      - "8083:8083"
+    depends_on:
+      - webvue-mysql
+    volumes:
+      - ".:/app"
+      - "~/.m2:/root/.m2"
+    command: mvn clean spring-boot:run
+
+    networks:
+      - webvue
+
+networks:
+   webvue:
+
+volumes:
+   webvuedb:
+
